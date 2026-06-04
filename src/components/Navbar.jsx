@@ -82,8 +82,11 @@ export default function Navbar() {
         position: 'fixed', top: 64, left: 0, right: 0, zIndex: 99,
         background: 'rgba(255,250,250,0.98)', backdropFilter: 'blur(12px)',
         borderBottom: '1px solid #FECDD3', padding: '12px 16px 18px',
-        transform: open ? 'translateY(0)' : 'translateY(-108%)',
-        transition: 'transform 0.22s cubic-bezier(0.4,0,0.2,1)',
+        transform: open ? 'translateY(0)' : 'translateY(-120%)',
+        opacity: open ? 1 : 0,
+        visibility: open ? 'visible' : 'hidden',
+        pointerEvents: open ? 'auto' : 'none',
+        transition: 'transform 0.22s cubic-bezier(0.4,0,0.2,1), opacity 0.2s',
       }} className="mob-drawer">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 12 }}>
           {LINKS.map(l => (
