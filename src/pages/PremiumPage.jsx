@@ -275,7 +275,7 @@ export default function PremiumPage() {
                   <span className="font-display" style={{ fontSize: 18, fontWeight: 700, color: '#BE185D' }}>99 000 so'm</span>
                 </div>
 
-                <button onClick={() => method && setPaid(true)} disabled={!method} style={{
+                <button onClick={() => { if (method) { localStorage.setItem('munosabat_premium', 'true'); setPaid(true) } }} disabled={!method} style={{
                   width: '100%', padding: '15px', borderRadius: 14, border: 'none', cursor: method ? 'pointer' : 'not-allowed',
                   background: method ? 'linear-gradient(135deg,#E11D48,#7B1FA2)' : '#E8DEE2', color: 'white', fontSize: 15.5, fontWeight: 700,
                   transition: 'all 0.15s',

@@ -2,12 +2,8 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import AvatarSVG from './AvatarSVG'
 
-const SYSTEM_PROMPT = `Sen "Munosabat AI" — juftliklar (er-xotin yoki sevishganlar) uchun maxsus yaratilgan, mehribon va professional munosabat maslahatchiasisisan.
-- O'zbek tilida gaplash
-- Hamdard, iliq, samimiy bo'l
-- 2-3 qisqa paragraf bilan javob ber
-- Munosabat muammolariga amaliy maslahat ber (Gottman, EFT asosida)
-- Emoji dan kam foydalanasan — 1-2 ta max`
+// Dev proxy orqali (vite.config.js → /api → staging.calora.uz) CORS'siz ishlaydi
+const API_URL = '/api/MunosabatAi/maslahat'
 
 const GREETING = `Salom! Men sizning shaxsiy AI maslahatchangizman 💕
 
@@ -24,15 +20,15 @@ const SUGGESTED = [
 
 function TypingDots() {
   return (
-    <div style={{ display: 'flex', gap: 5, padding: '10px 14px', background: '#F9F9F9', borderRadius: '18px 18px 18px 4px', border: '1px solid #F3E8EB', display: 'inline-flex', alignItems: 'center' }}>
-      {[0,1,2].map(i => (
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '10px 14px', background: '#F9F9F9', borderRadius: '18px 18px 18px 4px', border: '1px solid #F3E8EB' }}>
+      {[0, 1, 2].map(i => (
         <span key={i} className="typing-dot" style={{ width: 7, height: 7, borderRadius: '50%', background: '#FB7185', display: 'inline-block' }} />
       ))}
     </div>
   )
 }
 
-function Message({ msg }) {
+function Message({ msg, streaming }) {
   const isUser = msg.role === 'user'
   return (
     <div className="message-appear" style={{ display: 'flex', gap: 10, marginBottom: 16, flexDirection: isUser ? 'row-reverse' : 'row', alignItems: 'flex-end' }}>
@@ -53,8 +49,11 @@ function Message({ msg }) {
             ? { background: 'linear-gradient(135deg,#E11D48,#A78BFA)', color: 'white' }
             : { background: '#F9F9F9', color: '#2D1520', border: '1px solid #F0E0E4' }
           )
-        }}>{msg.content}</div>
-        <span style={{ fontSize: 11, color: '#C4A0AE', padding: '0 3px' }}>{msg.time}</span>
+        }}>
+          {msg.content}
+          {streaming && <span className="stream-caret" style={{ display: 'inline-block', width: 2, height: 15, marginLeft: 2, background: '#FB7185', verticalAlign: 'text-bottom', borderRadius: 1 }} />}
+        </div>
+        {msg.time && <span style={{ fontSize: 11, color: '#C4A0AE', padding: '0 3px' }}>{msg.time}</span>}
       </div>
     </div>
   )
@@ -63,14 +62,14 @@ function Message({ msg }) {
 export default function ChatWidget({ compact = false }) {
   const [msgs, setMsgs] = useState([])
   const [input, setInput] = useState('')
-  const [typing, setTyping] = useState(false)
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('mehr_api_key') || '')
-  const [showKey, setShowKey] = useState(false)
+  const [typing, setTyping] = useState(false)        // fetch jarayonida "..." ko'rsatkichi
+  const [streamingIdx, setStreamingIdx] = useState(-1) // qaysi xabar hozir yozilyapti
+  const [busy, setBusy] = useState(false)            // input bloklash
   const [showPremium, setShowPremium] = useState(false)
-  const [tmpKey, setTmpKey] = useState('')
   const endRef = useRef(null)
   const inputRef = useRef(null)
   const initRef = useRef(false)
+  const streamTimer = useRef(null)
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [msgs, typing])
 
@@ -83,48 +82,95 @@ export default function ChatWidget({ compact = false }) {
       setTyping(false)
       inputRef.current?.focus()
     }, 900)
+    return () => { if (streamTimer.current) clearTimeout(streamTimer.current) }
   }, [])
 
   const now = () => new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })
 
-  const saveKey = () => {
-    if (tmpKey.trim()) {
-      setApiKey(tmpKey.trim())
-      localStorage.setItem('mehr_api_key', tmpKey.trim())
-      setShowKey(false); setTmpKey('')
+  const isPremium = () => localStorage.getItem('munosabat_premium') === 'true'
+  const freeUsed = () => localStorage.getItem('munosabat_free_used') === 'true'
+
+  // Javobni belgi-belgi "yozayotganday" oqim bilan ko'rsatish
+  const streamAssistant = (fullText) => {
+    const clean = (fullText || '').trim() || 'Kechirasiz, javob topilmadi.'
+    setMsgs(p => {
+      const next = [...p, { role: 'assistant', content: '', time: now() }]
+      setStreamingIdx(next.length - 1)
+      return next
+    })
+    let i = 0
+    const tick = () => {
+      // har bir qadamda bir nechta belgi qo'shamiz (tezroq, lekin tabiiy)
+      i += clean[i] === ' ' ? 1 : 2
+      const slice = clean.slice(0, i)
+      setMsgs(p => {
+        const copy = [...p]
+        copy[copy.length - 1] = { ...copy[copy.length - 1], content: slice }
+        return copy
+      })
+      if (i < clean.length) {
+        streamTimer.current = setTimeout(tick, 18)
+      } else {
+        setStreamingIdx(-1)
+        setBusy(false)
+      }
+    }
+    tick()
+  }
+
+  const parseAnswer = (raw) => {
+    try {
+      const j = JSON.parse(raw)
+      if (typeof j === 'string') return j
+      const cand = j.javob ?? j.maslahat ?? j.natija ?? j.result ?? j.message ?? j.text ?? j.data ?? j.response
+      if (typeof cand === 'string') return cand
+      if (cand && typeof cand === 'object') return cand.text ?? cand.javob ?? JSON.stringify(cand)
+      return JSON.stringify(j)
+    } catch {
+      return raw // oddiy matn
     }
   }
 
-  const send = (text) => {
+  const send = async (text) => {
     const content = (text ?? input).trim()
-    if (!content) return
-    // Foydalanuvchi xabarini ko'rsatamiz, so'ng premium obuna taklif qilamiz
+    if (!content || busy) return
+
+    // Foydalanuvchi xabarini darhol ko'rsatamiz
     setInput('')
     setMsgs(p => [...p, { role: 'user', content, time: now() }])
-    setTimeout(() => setShowPremium(true), 450)
+
+    // Gating: birinchi marta bepul, keyin Premium kerak
+    if (!isPremium() && freeUsed()) {
+      setTimeout(() => setShowPremium(true), 450)
+      return
+    }
+
+    setBusy(true)
+    setTyping(true)
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { accept: '*/*', 'Accept-Language': 'UZ', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ muammo: content }),
+      })
+      if (!res.ok) throw new Error('HTTP ' + res.status)
+      const raw = await res.text()
+      const answer = parseAnswer(raw)
+
+      // Bepul foydalanish belgilanadi (Premium bo'lmasa)
+      if (!isPremium()) localStorage.setItem('munosabat_free_used', 'true')
+
+      setTyping(false)
+      streamAssistant(answer)
+    } catch (e) {
+      setTyping(false)
+      setBusy(false)
+      setMsgs(p => [...p, { role: 'assistant', content: `Kechirasiz, hozir javob bera olmadim. Iltimos birozdan keyin qayta urinib ko'ring. (${e.message})`, time: now() }])
+    }
   }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, position: 'relative' }}>
-
-      {/* API Key modal */}
-      {showKey && (
-        <div style={{ position: 'absolute', inset: 0, zIndex: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, background: 'rgba(255,241,242,0.9)', backdropFilter: 'blur(8px)', borderRadius: 'inherit' }}>
-          <div style={{ background: 'white', borderRadius: 20, padding: 28, width: '100%', maxWidth: 340, border: '1px solid #FECDD3', boxShadow: '0 8px 40px rgba(190,24,93,0.12)' }}>
-            <div style={{ textAlign: 'center', marginBottom: 20 }}>
-              <div style={{ fontSize: 40, marginBottom: 10 }}>🔑</div>
-              <p className="font-display" style={{ fontSize: 18, fontWeight: 600, color: '#BE185D', marginBottom: 6 }}>API Kalit kerak</p>
-              <p style={{ fontSize: 13, color: '#9F4F6B', lineHeight: 1.5 }}>Anthropic console.anthropic.com dan bepul API kalit oling va bu yerga kiriting</p>
-            </div>
-            <input type="password" value={tmpKey} onChange={e => setTmpKey(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveKey()} placeholder="sk-ant-api03-..." autoFocus
-              style={{ width: '100%', padding: '11px 14px', borderRadius: 12, border: '1.5px solid #FECDD3', fontSize: 13.5, outline: 'none', background: '#FFF1F2', color: '#3D1A28', boxSizing: 'border-box', marginBottom: 12 }} />
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => setShowKey(false)} style={{ flex: 1, padding: '11px', borderRadius: 12, border: 'none', background: '#FFE4E6', color: '#BE185D', fontSize: 13.5, fontWeight: 500, cursor: 'pointer' }}>Bekor</button>
-              <button onClick={saveKey} style={{ flex: 1, padding: '11px', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg,#E11D48,#A78BFA)', color: 'white', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>Saqlash</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Premium taklif modali */}
       {showPremium && (
@@ -134,19 +180,15 @@ export default function ChatWidget({ compact = false }) {
             background: 'linear-gradient(160deg,#2A0A22 0%,#5B1248 55%,#7B1FA2 100%)',
             border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 20px 60px rgba(123,31,162,0.4)',
           }}>
-            {/* Glow */}
             <div style={{ position: 'absolute', top: -50, right: -30, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,215,0,0.3), transparent 70%)', filter: 'blur(24px)' }} />
-
             <div style={{ position: 'relative', textAlign: 'center' }}>
               <div style={{ fontSize: 48, marginBottom: 12 }}>👑</div>
               <h3 className="font-display" style={{ fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 10 }}>
-                Suhbatni davom ettirish uchun Premium kerak
+                Bepul urinishingiz tugadi
               </h3>
               <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.78)', lineHeight: 1.6, marginBottom: 20 }}>
-                AI maslahatchi bilan cheksiz suhbat qilish uchun Premium obunaga a'zo bo'ling. Bir piyola qahva narxida — har kuni siz bilan.
+                Siz bitta bepul savol berdingiz. AI maslahatchi bilan <b>cheksiz</b> suhbatni davom ettirish uchun Premium obunaga a'zo bo'ling.
               </p>
-
-              {/* Price */}
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 6, marginBottom: 4 }}>
                 <span className="font-display" style={{ fontSize: 32, fontWeight: 700, color: 'white' }}>99 000</span>
                 <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>so'm / oy</span>
@@ -155,7 +197,6 @@ export default function ChatWidget({ compact = false }) {
                 <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', textDecoration: 'line-through', marginRight: 8 }}>199 000 so'm</span>
                 <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: 'linear-gradient(135deg,#FF4081,#E91E8C)', color: 'white' }}>-50%</span>
               </div>
-
               <Link to="/premium" style={{
                 display: 'block', width: '100%', padding: '14px', borderRadius: 13, boxSizing: 'border-box',
                 background: 'linear-gradient(135deg,#FFD700,#FFA000)', color: '#5B2C00', fontSize: 15, fontWeight: 700,
@@ -166,7 +207,6 @@ export default function ChatWidget({ compact = false }) {
               <button onClick={() => setShowPremium(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 13, cursor: 'pointer', padding: 4 }}>
                 Hozir emas
               </button>
-
               <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 12 }}>
                 ✓ 7 kun pul qaytarish kafolati
               </p>
@@ -177,7 +217,7 @@ export default function ChatWidget({ compact = false }) {
 
       {/* Messages area */}
       <div style={{ flex: 1, overflowY: 'auto', padding: compact ? '16px 16px' : '20px 24px', minHeight: 0 }}>
-        {msgs.map((m, i) => <Message key={i} msg={m} />)}
+        {msgs.map((m, i) => <Message key={i} msg={m} streaming={i === streamingIdx} />)}
         {typing && (
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', marginBottom: 16 }}>
             <div style={{ width: 32, height: 32, borderRadius: '50%', overflow: 'hidden', background: 'linear-gradient(135deg,#FFE4E6,#EDE9FE)', border: '1.5px solid #FECDD3', flexShrink: 0 }}>
@@ -205,19 +245,18 @@ export default function ChatWidget({ compact = false }) {
       <div style={{ padding: '10px 14px 14px', borderTop: '1px solid #F0E0E4', flexShrink: 0 }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', background: 'white', border: '1.5px solid #FECDD3', borderRadius: 16, padding: '8px 8px 8px 14px', boxShadow: '0 2px 8px rgba(190,24,93,0.06)', transition: 'border-color 0.15s' }}
           onFocusCapture={e => e.currentTarget.style.borderColor = '#FB7185'} onBlurCapture={e => e.currentTarget.style.borderColor = '#FECDD3'}>
-          <textarea ref={inputRef} value={input} rows={1}
+          <textarea ref={inputRef} value={input} rows={1} disabled={busy}
             onChange={e => { setInput(e.target.value); e.target.style.height = 'auto'; e.target.style.height = Math.min(e.target.scrollHeight, 100) + 'px' }}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-            placeholder="Muammoingizni yozing…"
+            placeholder={busy ? 'Munosabat AI yozmoqda…' : 'Muammoingizni yozing…'}
             style={{ flex: 1, border: 'none', outline: 'none', resize: 'none', fontSize: 14, lineHeight: 1.5, fontFamily: 'inherit', background: 'transparent', color: '#2D1520', minHeight: 24, maxHeight: 100, padding: 0 }} />
-          <button onClick={() => send()} disabled={!input.trim() || typing}
-            style={{ width: 36, height: 36, borderRadius: 10, border: 'none', flexShrink: 0, cursor: input.trim() && !typing ? 'pointer' : 'default', background: input.trim() && !typing ? 'linear-gradient(135deg,#E11D48,#A78BFA)' : '#F5E0E5', color: 'white', fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s', transform: input.trim() && !typing ? 'scale(1)' : 'scale(0.9)' }}>
+          <button onClick={() => send()} disabled={!input.trim() || busy}
+            style={{ width: 36, height: 36, borderRadius: 10, border: 'none', flexShrink: 0, cursor: input.trim() && !busy ? 'pointer' : 'default', background: input.trim() && !busy ? 'linear-gradient(135deg,#E11D48,#A78BFA)' : '#F5E0E5', color: 'white', fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s', transform: input.trim() && !busy ? 'scale(1)' : 'scale(0.9)' }}>
             ➤
           </button>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6, padding: '0 2px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 6 }}>
           <span style={{ fontSize: 11, color: '#C4A0AE' }}>Enter — yuborish · Shift+Enter — yangi qator</span>
-          <button onClick={() => setShowKey(true)} style={{ background: 'none', border: 'none', fontSize: 11, color: '#C4A0AE', cursor: 'pointer', fontFamily: 'inherit' }}>🔑 API kalit</button>
         </div>
       </div>
     </div>
