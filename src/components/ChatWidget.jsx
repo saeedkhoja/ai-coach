@@ -5,6 +5,28 @@ import AvatarSVG from './AvatarSVG'
 const API_BASE = import.meta.env.VITE_API_BASE ?? 'https://staging.calora.uz'
 const API_URL = `${API_BASE}/api/MunosabatAi/maslahat`
 
+// ── Suhbat tarixi (localStorage) ──
+const HISTORY_KEY = 'mehr_ai_tarix'
+// Ichki format {role:'user'|'assistant', content} <-> saqlanadigan format {kim:'user'|'model', matn}
+const toStored = (m) => ({ kim: m.role === 'assistant' ? 'model' : 'user', matn: m.content })
+const fromStored = (h) => ({ role: h.kim === 'model' ? 'assistant' : 'user', content: h.matn, time: '' })
+
+const loadHistory = () => {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY)
+    if (!raw) return []
+    const arr = JSON.parse(raw)
+    if (!Array.isArray(arr)) return []
+    return arr.filter(x => x && typeof x.matn === 'string' && x.matn.trim()).map(fromStored)
+  } catch { return [] }
+}
+const saveHistory = (msgs) => {
+  try {
+    const data = msgs.filter(m => m.content && m.content.trim()).map(toStored)
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(data))
+  } catch { /* ignore */ }
+}
+
 const GREETING = `Salom! Men sizning shaxsiy AI maslahatchangizman 💕
 
 Munosabatingizdagi har qanday muammo, savol yoki tashvish bilan murojaat qiling. Sizni tinglashga va yordam berishga doimo tayyorman.
@@ -91,12 +113,45 @@ export default function ChatWidget() {
   useEffect(() => {
     if (initRef.current) return
     initRef.current = true
-    setTyping(true)
-    setTimeout(() => {
-      setMsgs([{ role: 'assistant', content: GREETING, time: now() }])
-      setTyping(false)
-    }, 800)
+    const hist = loadHistory()
+    if (hist.length > 0) {
+      // Avvalgi suhbatni tiklaymiz
+      setMsgs(hist)
+    } else {
+      setTyping(true)
+      setTimeout(() => {
+        setMsgs([{ role: 'assistant', content: GREETING, time: now() }])
+        setTyping(false)
+      }, 800)
+    }
     return () => { if (streamTimer.current) clearTimeout(streamTimer.current) }
+  }, [])
+
+  // Har bir to'liq xabar o'zgarganda tarixni saqlaymiz (oqim tugagach, qisman emas)
+  useEffect(() => {
+    if (!initRef.current) return
+    if (streamingIdx !== -1) return
+    if (msgs.length === 0) return
+    saveHistory(msgs)
+  }, [msgs, streamingIdx])
+
+  // "Yangi suhbat" tugmasi (ChatPage header'idan) — tarixni tozalab, welcome'ga qaytaradi
+  useEffect(() => {
+    const handler = () => {
+      if (streamTimer.current) clearTimeout(streamTimer.current)
+      localStorage.removeItem(HISTORY_KEY)
+      setStreamingIdx(-1)
+      setBusy(false)
+      setShowPremium(false)
+      setInput('')
+      setTyping(true)
+      setTimeout(() => {
+        setMsgs([{ role: 'assistant', content: GREETING, time: now() }])
+        setTyping(false)
+      }, 400)
+    }
+    window.addEventListener('mehr-ai-new-chat', handler)
+    return () => window.removeEventListener('mehr-ai-new-chat', handler)
   }, [])
 
   const now = () => new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })
@@ -143,6 +198,9 @@ export default function ChatWidget() {
     if (!content || busy) return
     setInput('')
     if (inputRef.current) inputRef.current.style.height = 'auto'
+    // Joriy savoldan oldingi suhbat tarixini olamiz (oxirgi 10 ta xabar)
+    const tarix = msgs.map(toStored).slice(-10)
+
     setMsgs(p => [...p, { role: 'user', content, time: now() }])
 
     // Hozircha cheksiz: premium gating o'chirilgan
@@ -152,7 +210,7 @@ export default function ChatWidget() {
       const res = await fetch(API_URL, {
         method: 'POST',
         headers: { accept: '*/*', 'Accept-Language': 'UZ', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ muammo: content }),
+        body: JSON.stringify({ muammo: content, tarix }),
       })
       if (!res.ok) throw new Error('HTTP ' + res.status)
       const raw = await res.text()

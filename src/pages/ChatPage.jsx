@@ -36,6 +36,13 @@ function ChatHeader() {
       {premium && (
         <span style={{ padding: '5px 12px', borderRadius: 99, fontSize: 11.5, fontWeight: 700, background: 'linear-gradient(135deg,#FFE99A,#FFC94D)', color: '#8A5A00', flexShrink: 0 }}>👑</span>
       )}
+      <button
+        onClick={() => window.dispatchEvent(new Event('mehr-ai-new-chat'))}
+        title="Yangi suhbat" aria-label="Yangi suhbat"
+        style={{ width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FBE9EF', color: '#BE185D', fontSize: 17, border: 'none', cursor: 'pointer', flexShrink: 0 }}
+      >
+        ↻
+      </button>
     </div>
   )
 }
