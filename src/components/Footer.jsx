@@ -29,7 +29,7 @@ export default function Footer() {
           </div>
 
           {[
-            { title: 'Xizmatlar', links: [{ to: '/chat', l: 'AI Maslahat' }, { to: '/psychologists', l: 'Psixologlar' }, { to: '/courses', l: 'Kurslar' }, { to: '/quiz', l: 'Test' }] },
+            { title: 'Xizmatlar', links: [{ to: '/chat', l: 'AI Maslahat' }, { to: '/premium', l: '👑 Premium' }, { to: '/psychologists', l: 'Psixologlar' }, { to: '/courses', l: 'Kurslar' }] },
             { title: 'Bilim', links: [{ to: '/blog', l: 'Blog' }, { to: '/how-it-works', l: 'Qanday ishlaydi' }, { to: '/blog', l: 'Maqolalar' }, { to: '/how-it-works', l: "Qo'llanma" }] },
             { title: 'Kompaniya', links: [{ to: '/', l: 'Biz haqimizda' }, { to: '/', l: 'Aloqa' }, { to: '/', l: 'Maxfiylik' }, { to: '/', l: 'Shartlar' }] },
           ].map((col, i) => (

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ComingSoon from '../components/ComingSoon'
 
 const courses = [
   { id: 1, title: 'Sevgi Tillari: 5 ta muhim til', instructor: 'Dr. Nilufar Rashidova', duration: '4 soat 30 min', lessons: 18, level: "Boshlang'ich", price: '89 000', oldPrice: '150 000', rating: 4.9, students: 1240, cover: '❤️', tags: ['Sevgi', 'Asoslar'], desc: "Gary Chapman'ning 5 ta Sevgi Tili asosida o'z sevgi tilingizni va sheringingizning tilini aniqlang.", includes: ['18 ta video dars', 'Amaliy mashqlar', 'Sertifikat', 'Umrbod kirish'], bestseller: true },
@@ -26,6 +27,11 @@ export default function CoursesPage() {
         <h1 className="font-display" style={{ fontSize: 'clamp(28px, 5vw, 44px)', fontWeight: 700, color: '#BE185D', marginBottom: 10 }}>O'quv Kurslar</h1>
         <p style={{ fontSize: 16, color: '#9F4F6B', maxWidth: 520, margin: '0 auto' }}>Mutaxassis psixologlar tomonidan tayyorlangan kurslar bilan munosabatingizni yaxshilang</p>
       </div>
+
+      <ComingSoon
+        title="Video kurslar — tez orada ochiladi!"
+        desc="Psixologlarimiz hozir siz uchun amaliy video darslar tayyorlamoqda. Tez kunda Gottman va EFT metodikasiga asoslangan to'liq kurslarni o'tishingiz mumkin bo'ladi."
+      />
 
       {/* Stats */}
       <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 32, flexWrap: 'wrap' }}>
@@ -77,8 +83,8 @@ export default function CoursesPage() {
                   <span style={{ fontWeight: 700, fontSize: 17, color: '#BE185D' }}>{c.price} so'm</span>
                   <span style={{ fontSize: 12, color: '#C4899E', textDecoration: 'line-through', marginLeft: 6 }}>{c.oldPrice}</span>
                 </div>
-                <button onClick={() => setEnrolled(c)} style={{ padding: '9px 16px', borderRadius: 10, border: 'none', fontSize: 13.5, fontWeight: 600, cursor: 'pointer', color: 'white', background: 'linear-gradient(135deg,#E11D48,#A78BFA)', transition: 'transform 0.15s' }}>
-                  Sotib olish
+                <button disabled style={{ padding: '9px 16px', borderRadius: 10, border: '1px solid #FECDD3', fontSize: 13, fontWeight: 600, cursor: 'not-allowed', color: '#BE185D', background: '#FFF1F2' }}>
+                  ⏳ Tez orada
                 </button>
               </div>
             </div>
