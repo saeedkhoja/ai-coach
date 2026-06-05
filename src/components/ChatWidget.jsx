@@ -2,8 +2,10 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import AvatarSVG from './AvatarSVG'
 
-// Dev proxy orqali (vite.config.js → /api → staging.calora.uz) CORS'siz ishlaydi
-const API_URL = '/api/MunosabatAi/maslahat'
+// Backend bazaviy manzili — production uchun VITE_API_BASE bilan o'zgartiriladi.
+// Backend CORS endi har qanday originga ruxsat bergani uchun to'g'ridan-to'g'ri ishlaydi.
+const API_BASE = import.meta.env.VITE_API_BASE ?? 'https://staging.calora.uz'
+const API_URL = `${API_BASE}/api/MunosabatAi/maslahat`
 
 const GREETING = `Salom! Men sizning shaxsiy AI maslahatchangizman 💕
 
