@@ -60,6 +60,14 @@ textarea, input { font-family: inherit; }
 .dot:nth-child(2) { animation-delay: .15s; }
 .dot:nth-child(3) { animation-delay: .3s; }
 
+.typing-dot { animation: typeBounce 1.3s infinite ease-in-out; }
+.typing-dot:nth-child(2) { animation-delay: .15s; }
+.typing-dot:nth-child(3) { animation-delay: .3s; }
+
+/* Streaming caret blink */
+@keyframes caretBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.stream-caret { animation: caretBlink 0.9s step-end infinite; }
+
 /* Gradient text */
 .grad-text {
   background: linear-gradient(135deg, #BE185D 0%, #7C3AED 100%);

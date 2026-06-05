@@ -59,9 +59,9 @@ export default function ChatPage() {
               <p className="font-display" style={{ fontWeight: 600, fontSize: 15, color: '#BE185D', margin: 0 }}>Munosabat AI</p>
               <p style={{ fontSize: 12, color: '#A0657A', margin: 0 }}>Munosabat maslahatchi · O'zbek tilida</p>
             </div>
-            <button onClick={() => { const k = localStorage.getItem('mehr_api_key'); if(k) { localStorage.removeItem('mehr_api_key'); window.location.reload() } }} style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #F5E0E5', background: 'transparent', color: '#B07A8E', fontSize: 12, cursor: 'pointer' }}>
-              🔑 API kalit
-            </button>
+            {localStorage.getItem('munosabat_premium') === 'true' && (
+              <span style={{ padding: '5px 12px', borderRadius: 99, fontSize: 11.5, fontWeight: 700, background: 'linear-gradient(135deg,#FFE99A,#FFC94D)', color: '#8A5A00' }}>👑 Premium</span>
+            )}
           </div>
           <ChatWidget />
         </div>
