@@ -41,12 +41,14 @@ function ChatHeader() {
 }
 
 export default function ChatPage() {
-  // Klaviatura ochilganda input "sakramasligi" uchun: visualViewport balandligini kuzatamiz
-  const [vh, setVh] = useState(null)
+  // Klaviatura ochilganda layout "sakramasligi" uchun visualViewport'ni aniq kuzatamiz.
+  // iOS klaviatura ochilganda fixed elementni suradi — shuning uchun balandlik + ofsetni
+  // har doim ko'rinadigan zonaga moslab qo'yamiz.
+  const [vp, setVp] = useState({ height: null, top: 0 })
   useEffect(() => {
     const vv = window.visualViewport
     if (!vv) return
-    const apply = () => setVh(vv.height)
+    const apply = () => setVp({ height: vv.height, top: vv.offsetTop })
     apply()
     vv.addEventListener('resize', apply)
     vv.addEventListener('scroll', apply)
@@ -55,14 +57,19 @@ export default function ChatPage() {
 
   // Body scroll'ni butunlay bloklaymiz — sahifa qimirlamasin
   useEffect(() => {
-    const prev = document.body.style.overflow
+    const prevB = document.body.style.overflow
+    const prevH = document.documentElement.style.overflow
     document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = prev }
+    document.documentElement.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prevB; document.documentElement.style.overflow = prevH }
   }, [])
 
+  // MUHIM: top/left/right + aniq height (inset:0 EMAS) — aks holda height e'tiborga olinmaydi
   const outerStyle = {
-    position: 'fixed', inset: 0,
-    height: vh ? `${vh}px` : '100dvh',
+    position: 'fixed',
+    top: vp.top ? `${vp.top}px` : 0,
+    left: 0, right: 0,
+    height: vp.height ? `${vp.height}px` : '100dvh',
     display: 'flex', justifyContent: 'center',
     background: '#FFF5F7', overflow: 'hidden',
   }
