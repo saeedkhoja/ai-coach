@@ -58,6 +58,14 @@ export default function Navbar() {
             ))}
           </nav>
 
+          <Link to="/premium" className="d-nav" style={{
+            padding: '7px 14px', borderRadius: 8, fontSize: 14, fontWeight: 700, marginLeft: 4,
+            color: '#8A5A00', background: 'linear-gradient(135deg,#FFE99A,#FFC94D)',
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+          }}>
+            👑 Premium
+          </Link>
+
           <Link to="/chat" className="btn-primary d-nav" style={{ padding: '8px 18px', fontSize: 14, marginLeft: 10 }}>
             💬 AI Maslahat
           </Link>
@@ -96,6 +104,11 @@ export default function Navbar() {
               background: pathname === l.to ? '#FFF1F2' : 'transparent',
             }}>{l.label}</Link>
           ))}
+          <Link to="/premium" style={{
+            padding: '11px 14px', borderRadius: 10, fontSize: 15, fontWeight: 700,
+            color: '#8A5A00', background: 'linear-gradient(135deg,#FFE99A,#FFC94D)',
+            display: 'flex', alignItems: 'center', gap: 6, marginTop: 4,
+          }}>👑 Premium a'zolik</Link>
         </div>
         <Link to="/chat" className="btn-primary" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
           💬 AI bilan suhbat boshlang

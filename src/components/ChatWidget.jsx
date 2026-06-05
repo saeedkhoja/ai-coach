@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import AvatarSVG from './AvatarSVG'
 
 const SYSTEM_PROMPT = `Sen "Mehr AI" — juftliklar (er-xotin yoki sevishganlar) uchun maxsus yaratilgan, mehribon va professional munosabat maslahatchiasisisan.
@@ -65,6 +66,7 @@ export default function ChatWidget({ compact = false }) {
   const [typing, setTyping] = useState(false)
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('mehr_api_key') || '')
   const [showKey, setShowKey] = useState(false)
+  const [showPremium, setShowPremium] = useState(false)
   const [tmpKey, setTmpKey] = useState('')
   const endRef = useRef(null)
   const inputRef = useRef(null)
@@ -93,27 +95,13 @@ export default function ChatWidget({ compact = false }) {
     }
   }
 
-  const send = async (text) => {
+  const send = (text) => {
     const content = (text ?? input).trim()
     if (!content) return
-    if (!apiKey) { setShowKey(true); return }
+    // Foydalanuvchi xabarini ko'rsatamiz, so'ng premium obuna taklif qilamiz
     setInput('')
-    const userMsg = { role: 'user', content, time: now() }
-    setMsgs(p => [...p, userMsg])
-    setTyping(true)
-    try {
-      const history = [...msgs, userMsg].map(m => ({ role: m.role, content: m.content }))
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-        body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 800, system: SYSTEM_PROMPT, messages: history }),
-      })
-      if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error?.message || `HTTP ${res.status}`) }
-      const d = await res.json()
-      setMsgs(p => [...p, { role: 'assistant', content: d.content[0]?.text || '', time: now() }])
-    } catch (e) {
-      setMsgs(p => [...p, { role: 'assistant', content: `Xatolik: ${e.message}. API kalitni tekshiring.`, time: now() }])
-    } finally { setTyping(false) }
+    setMsgs(p => [...p, { role: 'user', content, time: now() }])
+    setTimeout(() => setShowPremium(true), 450)
   }
 
   return (
@@ -133,6 +121,55 @@ export default function ChatWidget({ compact = false }) {
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setShowKey(false)} style={{ flex: 1, padding: '11px', borderRadius: 12, border: 'none', background: '#FFE4E6', color: '#BE185D', fontSize: 13.5, fontWeight: 500, cursor: 'pointer' }}>Bekor</button>
               <button onClick={saveKey} style={{ flex: 1, padding: '11px', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg,#E11D48,#A78BFA)', color: 'white', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>Saqlash</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Premium taklif modali */}
+      {showPremium && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 18, background: 'rgba(43,10,34,0.45)', backdropFilter: 'blur(8px)', borderRadius: 'inherit' }}>
+          <div style={{
+            position: 'relative', overflow: 'hidden', width: '100%', maxWidth: 360, borderRadius: 24, padding: '32px 28px',
+            background: 'linear-gradient(160deg,#2A0A22 0%,#5B1248 55%,#7B1FA2 100%)',
+            border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 20px 60px rgba(123,31,162,0.4)',
+          }}>
+            {/* Glow */}
+            <div style={{ position: 'absolute', top: -50, right: -30, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,215,0,0.3), transparent 70%)', filter: 'blur(24px)' }} />
+
+            <div style={{ position: 'relative', textAlign: 'center' }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>👑</div>
+              <h3 className="font-display" style={{ fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 10 }}>
+                Suhbatni davom ettirish uchun Premium kerak
+              </h3>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.78)', lineHeight: 1.6, marginBottom: 20 }}>
+                AI maslahatchi bilan cheksiz suhbat qilish uchun Premium obunaga a'zo bo'ling. Bir piyola qahva narxida — har kuni siz bilan.
+              </p>
+
+              {/* Price */}
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 6, marginBottom: 4 }}>
+                <span className="font-display" style={{ fontSize: 32, fontWeight: 700, color: 'white' }}>99 000</span>
+                <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>so'm / oy</span>
+              </div>
+              <div style={{ marginBottom: 22 }}>
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', textDecoration: 'line-through', marginRight: 8 }}>199 000 so'm</span>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: 'linear-gradient(135deg,#FF4081,#E91E8C)', color: 'white' }}>-50%</span>
+              </div>
+
+              <Link to="/premium" style={{
+                display: 'block', width: '100%', padding: '14px', borderRadius: 13, boxSizing: 'border-box',
+                background: 'linear-gradient(135deg,#FFD700,#FFA000)', color: '#5B2C00', fontSize: 15, fontWeight: 700,
+                textDecoration: 'none', boxShadow: '0 8px 24px rgba(255,160,0,0.35)', marginBottom: 10,
+              }}>
+                👑 Premium a'zo bo'lish
+              </Link>
+              <button onClick={() => setShowPremium(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 13, cursor: 'pointer', padding: 4 }}>
+                Hozir emas
+              </button>
+
+              <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 12 }}>
+                ✓ 7 kun pul qaytarish kafolati
+              </p>
             </div>
           </div>
         </div>

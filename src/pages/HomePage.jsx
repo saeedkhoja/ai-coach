@@ -182,6 +182,94 @@ export default function HomePage() {
         </div>
       </section>
 
+      <div className="divider" />
+
+      {/* ── PREMIUM SUBSCRIPTION ── */}
+      <section className="section">
+        <div className="wrap">
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 16px', borderRadius: 99, fontSize: 12.5, fontWeight: 700, letterSpacing: 0.5, background: 'linear-gradient(135deg,#FFD700,#FFA000)', color: '#5B2C00', marginBottom: 14, boxShadow: '0 4px 16px rgba(255,160,0,0.25)' }}>
+              👑 PREMIUM A'ZOLIK
+            </div>
+            <h2 className="font-display" style={{ fontSize: 'clamp(22px,4vw,36px)', fontWeight: 700, color: '#1A0A10', marginBottom: 12 }}>
+              Bepul boshlang, Premium bilan to'liq oching
+            </h2>
+            <p style={{ fontSize: 16, color: '#9F4F6B', maxWidth: 500, margin: '0 auto' }}>
+              Har ikki rejada ham boshlash mumkin. Premium sizga cheksiz imkoniyat beradi.
+            </p>
+          </div>
+
+          {/* Free vs Premium cards */}
+          <div className="plans-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.15fr', gap: 18, alignItems: 'stretch', maxWidth: 760, margin: '0 auto' }}>
+
+            {/* FREE */}
+            <div style={{ background: 'white', border: '1px solid #F0E0E4', borderRadius: 22, padding: '28px 26px', display: 'flex', flexDirection: 'column' }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#9F4F6B', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 6 }}>Bepul</p>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 18 }}>
+                <span className="font-display" style={{ fontSize: 34, fontWeight: 700, color: '#1A0A10' }}>0</span>
+                <span style={{ fontSize: 14, color: '#9F4F6B' }}>so'm</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 11, flex: 1, marginBottom: 22 }}>
+                {[
+                  [true, 'AI maslahat — cheklangan'],
+                  [true, 'Munosabat testi'],
+                  [true, 'Blog va maqolalar'],
+                  [false, 'Cheksiz suhbat'],
+                  [false, 'Video kurslar'],
+                  [false, 'Psixolog chegirmasi'],
+                ].map(([ok, t], i) => (
+                  <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: 13.5, color: ok ? '#3D1A28' : '#C4A0AE' }}>
+                    <span style={{ flexShrink: 0, width: 18, height: 18, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, background: ok ? '#DCFCE7' : '#F3E8EC', color: ok ? '#16A34A' : '#D1A5B3' }}>{ok ? '✓' : '×'}</span>
+                    {t}
+                  </div>
+                ))}
+              </div>
+              <Link to="/chat" className="btn-secondary" style={{ justifyContent: 'center', width: '100%' }}>
+                Bepul boshlash
+              </Link>
+            </div>
+
+            {/* PREMIUM */}
+            <div style={{ position: 'relative', borderRadius: 22, padding: '28px 26px', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: 'linear-gradient(160deg,#2A0A22 0%,#5B1248 55%,#7B1FA2 100%)', boxShadow: '0 16px 48px rgba(123,31,162,0.3)', border: '1px solid rgba(255,255,255,0.12)' }}>
+              <div style={{ position: 'absolute', top: -50, right: -30, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,215,0,0.28), transparent 70%)', filter: 'blur(24px)' }} />
+              <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#FFD700', textTransform: 'uppercase', letterSpacing: 0.8 }}>👑 Premium</p>
+                  <span style={{ fontSize: 10.5, fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: 'linear-gradient(135deg,#FF4081,#E91E8C)', color: 'white' }}>-50%</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 2 }}>
+                  <span className="font-display" style={{ fontSize: 34, fontWeight: 700, color: 'white' }}>99 000</span>
+                  <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>so'm / oy</span>
+                </div>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', textDecoration: 'line-through', marginBottom: 18 }}>199 000 so'm</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 11, flex: 1, marginBottom: 22 }}>
+                  {[
+                    'Cheksiz AI maslahat 24/7',
+                    'Suhbat tarixini eslab qoladi',
+                    'Barcha video kurslar bepul',
+                    'Psixolog sessiyalariga 30% chegirma',
+                    'Haftalik rivojlanish hisoboti',
+                    'Reklama yo\'q · Birinchi navbatda',
+                  ].map((t, i) => (
+                    <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: 13.5, color: 'rgba(255,255,255,0.92)' }}>
+                      <span style={{ flexShrink: 0, width: 18, height: 18, borderRadius: '50%', background: 'rgba(74,222,128,0.22)', color: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>✓</span>
+                      {t}
+                    </div>
+                  ))}
+                </div>
+                <Link to="/premium" style={{ display: 'block', textAlign: 'center', width: '100%', padding: '14px', borderRadius: 13, boxSizing: 'border-box', background: 'linear-gradient(135deg,#FFD700,#FFA000)', color: '#5B2C00', fontSize: 15, fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 24px rgba(255,160,0,0.35)' }}>
+                  👑 Premium a'zo bo'lish
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <p style={{ textAlign: 'center', fontSize: 13, color: '#BE185D', marginTop: 20, fontWeight: 500 }}>
+            ⏰ -50% chegirma faqat birinchi 100 a'zo uchun · ✓ 7 kun pul qaytarish kafolati
+          </p>
+        </div>
+      </section>
+
       {/* ── CTA ── */}
       <section className="section">
         <div className="wrap-sm">
@@ -208,6 +296,7 @@ export default function HomePage() {
       <style>{`
         @media (max-width: 640px) {
           .steps-g { grid-template-columns: 1fr !important; }
+          .plans-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>

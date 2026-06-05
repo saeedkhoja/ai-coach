@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ComingSoon from '../components/ComingSoon'
 
 const psychologists = [
   { id: 1, name: 'Dr. Nilufar Rashidova', title: 'Oilaviy psixolog, 12 yil tajriba', spec: ['Nikoh maslahati', 'Kommunikatsiya', 'Ishonch'], rating: 4.9, reviews: 248, price: '150 000', available: true, nextSlot: 'Bugun 15:00', avatar: '👩‍⚕️', about: "Juftliklar bilan ishlashga ixtisoslashgan. Gottman metodidan foydalanaman.", langs: ["O'zbek", 'Rus'] },
@@ -37,6 +38,11 @@ export default function PsychologistsPage() {
           O'zbekistonning eng yaxshi oilaviy psixologlari bilan onlayn sessiya band qiling
         </p>
       </div>
+
+      <ComingSoon
+        title="Psixologlar bilan onlayn sessiya — tez orada!"
+        desc="Hozir eng yaxshi sertifikatlangan mutaxologlarni platformaga jalb qilmoqdamiz. Tez kunda ular bilan to'g'ridan-to'g'ri video va chat sessiyalarini band qila olasiz."
+      />
 
       {/* Filters */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginBottom: 36 }}>
@@ -79,8 +85,8 @@ export default function PsychologistsPage() {
                 <p style={{ fontWeight: 700, fontSize: 16, color: '#BE185D', margin: '0 0 2px' }}>{p.price} so'm</p>
                 <p style={{ fontSize: 12, color: p.available ? '#22C55E' : '#F59E0B', margin: 0 }}>{p.available ? `✅ ${p.nextSlot}` : `🕐 ${p.nextSlot}`}</p>
               </div>
-              <button onClick={() => setShowBooking(p)} style={{ padding: '9px 18px', borderRadius: 12, border: 'none', fontSize: 13.5, fontWeight: 600, cursor: 'pointer', color: 'white', background: p.available ? 'linear-gradient(135deg,#E11D48,#A78BFA)' : '#D1D5DB', transition: 'transform 0.15s' }}>
-                {p.available ? 'Band qilish' : "Ro'yxat"}
+              <button disabled style={{ padding: '9px 18px', borderRadius: 12, border: '1px solid #FECDD3', fontSize: 13, fontWeight: 600, cursor: 'not-allowed', color: '#BE185D', background: '#FFF1F2' }}>
+                ⏳ Tez orada
               </button>
             </div>
           </div>

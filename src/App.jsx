@@ -8,6 +8,7 @@ import CoursesPage from './pages/CoursesPage'
 import BlogPage from './pages/BlogPage'
 import HowItWorksPage from './pages/HowItWorksPage'
 import QuizPage from './pages/QuizPage'
+import PremiumPage from './pages/PremiumPage'
 
 function Layout() {
   const { pathname } = useLocation()
@@ -25,6 +26,7 @@ function Layout() {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/how-it-works" element={<HowItWorksPage />} />
           <Route path="/quiz" element={<QuizPage />} />
+          <Route path="/premium" element={<PremiumPage />} />
         </Routes>
       </main>
       {!isChat && <Footer />}
