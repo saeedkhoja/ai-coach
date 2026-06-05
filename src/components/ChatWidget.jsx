@@ -145,11 +145,7 @@ export default function ChatWidget() {
     if (inputRef.current) inputRef.current.style.height = 'auto'
     setMsgs(p => [...p, { role: 'user', content, time: now() }])
 
-    if (!isPremium() && freeUsed()) {
-      setTimeout(() => setShowPremium(true), 450)
-      return
-    }
-
+    // Hozircha cheksiz: premium gating o'chirilgan
     setBusy(true)
     setTyping(true)
     try {
@@ -161,7 +157,6 @@ export default function ChatWidget() {
       if (!res.ok) throw new Error('HTTP ' + res.status)
       const raw = await res.text()
       const answer = parseAnswer(raw)
-      if (!isPremium()) localStorage.setItem('munosabat_free_used', 'true')
       setTyping(false)
       streamAssistant(answer)
     } catch (e) {
