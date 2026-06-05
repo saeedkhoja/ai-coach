@@ -16,7 +16,7 @@ const STEPS = [
 ]
 
 const REVIEWS = [
-  { name: 'Malika T.', city: 'Toshkent', text: "Mehr AI bizning nikohimizni saqlab qoldi. 3 yillik muammomizga 2 hafta ichida yechim topdik.", stars: 5 },
+  { name: 'Malika T.', city: 'Toshkent', text: "Munosabat AI bizning nikohimizni saqlab qoldi. 3 yillik muammomizga 2 hafta ichida yechim topdik.", stars: 5 },
   { name: 'Sardor va Nilufar', city: 'Samarqand', text: "AI chat juda foydali bo'ldi. Psixolog kursi esa hamma narsani o'zgartirdi.", stars: 5 },
   { name: 'Zulfiya R.', city: 'Namangan', text: "Kechasi soat 2da ham maslahat olish mumkin. Bu imkoniyat menga juda kerak edi.", stars: 5 },
 ]

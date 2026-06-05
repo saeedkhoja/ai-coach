@@ -39,7 +39,7 @@ export default function Navbar() {
             <div style={{ width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg,#E11D48,#9333EA)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 10px rgba(225,29,72,0.3)' }}>
               <span style={{ color: 'white', fontSize: 15 }} className="hb">♥</span>
             </div>
-            <span className="font-display grad-text" style={{ fontSize: 19, fontWeight: 700 }}>Mehr AI</span>
+            <span className="font-display grad-text" style={{ fontSize: 19, fontWeight: 700 }}>Munosabat AI</span>
           </Link>
 
           <div style={{ flex: 1 }} />

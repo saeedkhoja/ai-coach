@@ -74,7 +74,7 @@ export default function LandingPage({ onStart }) {
             </div>
             <span className="font-display text-xl font-semibold"
               style={{ background: 'linear-gradient(135deg, #E11D48, #7C3AED)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Mehr AI
+              Munosabat AI
             </span>
           </div>
           <button
@@ -166,7 +166,7 @@ export default function LandingPage({ onStart }) {
       <section className="max-w-6xl mx-auto px-6 py-16">
         <h2 className="font-display text-3xl md:text-4xl font-semibold text-center mb-12"
           style={{ color: '#BE185D' }}>
-          Nima uchun <em>Mehr AI</em>?
+          Nima uchun <em>Munosabat AI</em>?
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((f, i) => (
@@ -195,7 +195,7 @@ export default function LandingPage({ onStart }) {
             Munosabatingizni yangi bosqichga olib chiqing
           </h2>
           <p className="text-lg opacity-90 mb-8 relative max-w-xl mx-auto">
-            Minglab juftliklar allaqachon Mehr AI yordamida munosabatlarini mustahkamlashdi.
+            Minglab juftliklar allaqachon Munosabat AI yordamida munosabatlarini mustahkamlashdi.
           </p>
           <button
             onClick={onStart}
@@ -211,7 +211,7 @@ export default function LandingPage({ onStart }) {
       <footer className="text-center py-8 px-6" style={{ color: '#C4899E' }}>
         <div className="flex items-center justify-center gap-2 mb-2">
           <span className="heartbeat inline-block">♥</span>
-          <span className="font-display font-medium" style={{ color: '#E11D48' }}>Mehr AI</span>
+          <span className="font-display font-medium" style={{ color: '#E11D48' }}>Munosabat AI</span>
         </div>
         <p className="text-sm">Sevgi va muruvvat bilan yaratilgan · 2024</p>
       </footer>

@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom'
 
 const STEPS = [
   {
-    n: '01', icon: '🔑', title: 'API Kalit oling',
-    desc: 'Anthropic saytidan bepul API kalit oling. Kredit karta shart emas.',
-    items: ['console.anthropic.com saytiga o\'ting', 'Bepul hisob yarating', '"API Keys" bo\'limidan yangi kalit yarating', 'Mehr AI chatda 🔑 tugmasini bosib kalitni saqlang'],
-    note: 'Kalit faqat sizning brauzeringizda saqlanadi — xavfsiz.',
+    n: '01', icon: '👑', title: 'Premium harid qiling',
+    desc: 'AI maslahatchi bilan cheksiz suhbat qilish uchun Premium obunaga a\'zo bo\'ling.',
+    items: ['Premium sahifasiga o\'ting', 'Click yoki Payme orqali to\'lov qiling', 'Atigi 99 000 so\'m / oy — bir piyola qahva narxida', '7 kun pul qaytarish kafolati'],
+    note: 'Istalgan vaqt bekor qila olasiz — hech qanday majburiyat yo\'q.',
   },
   {
     n: '02', icon: '💬', title: 'AI bilan suhbat boshlang',
@@ -28,7 +28,7 @@ const STEPS = [
 ]
 
 const FAQS = [
-  { q: 'Mehr AI mutlaqo bepulmi?', a: 'AI chat uchun faqat Anthropic API kaliti kerak — bepul trial bilan keladi. Psixolog sessiyalari va kurslar alohida to\'lov talab qiladi.' },
+  { q: 'Munosabat AI mutlaqo bepulmi?', a: 'AI chat uchun faqat Anthropic API kaliti kerak — bepul trial bilan keladi. Psixolog sessiyalari va kurslar alohida to\'lov talab qiladi.' },
   { q: 'Ma\'lumotlarim xavfsizmi?', a: 'Ha. API kalit faqat sizning brauzeringizda mahalliy saqlanadi. Hech qanday suhbat bizning serverimizga yuboriilmaydi.' },
   { q: 'AI haqiqiy psixologni almashtira oladimi?', a: 'AI kundalik maslahat va dastlabki tahlil uchun juda foydali. Ammo murakkab yoki og\'ir vaziyatlarda real psixolog bilan ishlash tavsiya etiladi.' },
   { q: 'Qaysi tilda ishlaydi?', a: 'To\'liq O\'zbek tilida. Psixologlarimiz ham O\'zbek, Rus va Ingliz tillarida xizmat ko\'rsatadi.' },
