@@ -16,7 +16,7 @@ function Layout() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#FFFAFA' }}>
-      <Navbar />
+      {!isChat && <Navbar />}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Routes>
           <Route path="/" element={<HomePage />} />
