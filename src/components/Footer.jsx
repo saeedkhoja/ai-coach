@@ -12,7 +12,7 @@ export default function Footer() {
               <div style={{ width: 32, height: 32, borderRadius: 9, background: 'linear-gradient(135deg,#E11D48,#9333EA)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <span style={{ color: 'white', fontSize: 14 }} className="hb">♥</span>
               </div>
-              <span className="font-display grad-text" style={{ fontSize: 18, fontWeight: 700 }}>Mehr AI</span>
+              <span className="font-display grad-text" style={{ fontSize: 18, fontWeight: 700 }}>Munosabat AI</span>
             </Link>
             <p style={{ fontSize: 13.5, color: '#9F4F6B', lineHeight: 1.65, marginBottom: 18, maxWidth: 240 }}>
               Juftliklar va sevishganlar uchun O'zbekistondagi ilk AI munosabat maslahatchi platformasi.
@@ -61,7 +61,7 @@ export default function Footer() {
 
         {/* Bottom */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'space-between', alignItems: 'center', paddingTop: 20, borderTop: '1px solid #F5E0E5' }}>
-          <p style={{ fontSize: 13, color: '#C4A0AE' }}>© 2024 Mehr AI · Sevgi va muruvvat bilan yaratilgan <span className="hb">♥</span></p>
+          <p style={{ fontSize: 13, color: '#C4A0AE' }}>© 2024 Munosabat AI · Sevgi va muruvvat bilan yaratilgan <span className="hb">♥</span></p>
           <p style={{ fontSize: 12, color: '#C4A0AE' }}>O'zbekiston · Barcha huquqlar himoyalangan</p>
         </div>
       </div>

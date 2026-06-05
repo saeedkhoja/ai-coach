@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import AvatarSVG from './AvatarSVG'
 
-const SYSTEM_PROMPT = `Sen "Mehr AI" — juftliklar (er-xotin yoki sevishganlar) uchun maxsus yaratilgan, mehribon va professional munosabat maslahatchiasisisan.
+const SYSTEM_PROMPT = `Sen "Munosabat AI" — juftliklar (er-xotin yoki sevishganlar) uchun maxsus yaratilgan, mehribon va professional munosabat maslahatchiasisisan.
 - O'zbek tilida gaplash
 - Hamdard, iliq, samimiy bo'l
 - 2-3 qisqa paragraf bilan javob ber

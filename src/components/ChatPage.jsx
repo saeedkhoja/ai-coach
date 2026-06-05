@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import AvatarSVG from './AvatarSVG'
 
-const SYSTEM_PROMPT = `Sen "Mehr AI" — juftliklar (er-xotin yoki sevishganlar) uchun maxsus yaratilgan, mehribon va professional munosabat maslahatchiasisisan.
+const SYSTEM_PROMPT = `Sen "Munosabat AI" — juftliklar (er-xotin yoki sevishganlar) uchun maxsus yaratilgan, mehribon va professional munosabat maslahatchiasisisan.
 
 Xususiyatlaring:
 - Hamdard, iliq va tushunuvchi muloqot olib borasan
@@ -14,7 +14,7 @@ Xususiyatlaring:
 - Juda uzun javob berma — 2-4 qisqa paragraf kifoya
 - Emoji dan kam foydalanasan — 1-2 ta max
 
-Kirishda o'zingni "Mehr AI — sizning shaxsiy munosabat maslahatchangiz" deb tanishtir.`
+Kirishda o'zingni "Munosabat AI — sizning shaxsiy munosabat maslahatchangiz" deb tanishtir.`
 
 const SUGGESTED_QUESTIONS = [
   "Janjal keyin qanday yarashish kerak?",
@@ -38,7 +38,7 @@ function Message({ msg }) {
       )}
       <div className={`max-w-[75%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
         {!isUser && (
-          <span className="text-xs font-medium px-2" style={{ color: '#BE185D' }}>Mehr AI</span>
+          <span className="text-xs font-medium px-2" style={{ color: '#BE185D' }}>Munosabat AI</span>
         )}
         <div
           className="px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm"
@@ -71,7 +71,7 @@ function TypingIndicator() {
         <AvatarSVG size={40} />
       </div>
       <div>
-        <span className="text-xs font-medium px-2 block mb-1" style={{ color: '#BE185D' }}>Mehr AI</span>
+        <span className="text-xs font-medium px-2 block mb-1" style={{ color: '#BE185D' }}>Munosabat AI</span>
         <div className="px-4 py-3 rounded-2xl rounded-bl-none inline-flex gap-2 items-center"
           style={{ background: 'rgba(255,255,255,0.85)', border: '1px solid #FECDD3' }}>
           <span className="typing-dot w-2 h-2 rounded-full inline-block" style={{ background: '#FB7185' }} />
@@ -114,7 +114,7 @@ export default function ChatPage({ onBack }) {
     await new Promise(r => setTimeout(r, 1200))
     setMessages([{
       role: 'assistant',
-      content: 'Salom! Men Mehr AI — sizning shaxsiy munosabat maslahatchangizman 💕\n\nMen er-xotin yoki sevishganlar o\'rtasidagi muammolarni tushunishga va yechim topishga yordam beraman. Bugun qanday muammo yoki savol bilan keldingiz?',
+      content: 'Salom! Men Munosabat AI — sizning shaxsiy munosabat maslahatchangizman 💕\n\nMen er-xotin yoki sevishganlar o\'rtasidagi muammolarni tushunishga va yechim topishga yordam beraman. Bugun qanday muammo yoki savol bilan keldingiz?',
       time: getTime()
     }])
     setIsTyping(false)
@@ -215,7 +215,7 @@ export default function ChatPage({ onBack }) {
             </div>
             <div>
               <p className="font-display font-semibold text-base leading-none mb-0.5"
-                style={{ color: '#BE185D' }}>Mehr AI</p>
+                style={{ color: '#BE185D' }}>Munosabat AI</p>
               <p className="text-xs" style={{ color: '#A0657A' }}>● Onlayn · Doimo tayyor</p>
             </div>
           </div>
